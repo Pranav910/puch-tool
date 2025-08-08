@@ -10,9 +10,12 @@ from bson import ObjectId
 TOKEN = "1e4a0392b5cc"
 MY_NUMBER = "919834065747"
 
-client = MongoClient('mongodb://localhost:27017/')
-db = client['tasksDB']
-collection = db['tasks']
+try:
+    client = MongoClient('mongodb+srv://ytmanager:pranav910@yt-cluster.zr2pc.mongodb.net/?retryWrites=true&w=majority&appName=yt-cluster')
+    db = client['tasksDB']
+    collection = db['tasks']
+except Exception as e:
+        print(f"mongodb server error due to: {e}")
 
 class RichToolDescription(BaseModel):
     description: str
@@ -49,6 +52,7 @@ mcp = FastMCP(
     "My MCP Server",
     auth=SimpleBearerAuthProvider(TOKEN),
 )
+print("line 55 hello mcp")
 
 @mcp.tool
 async def validate() -> str:
@@ -158,12 +162,26 @@ def create_task(task: dict):
     }  
     """
 
-    print(task)
     collection.insert_one({"title": task.get('title', 'No Title'),
                            "dueDate": task.get('dueDate', 'No Due Date'),
                            "status": task.get('status', 'Not Started')})
+    
+    tasks = []
 
-    return "Task created successfully."
+    for task in collection.find():
+
+        tasks.append({
+        "taskID": f"{task.get('_id')}",
+        "taskTitle": f"{task.get('title', 'No Title')}",
+        "dueData": f"{task.get('dueDate', 'No Due Date')}",
+        "taskStatus": f"{task.get('status', 'No Status')}"
+    })
+        
+    print(tasks)
+
+    content = markdownify.markdownify(json_list_to_markdown_table(tasks)) 
+
+    return f"Task created successfully and here are all the created tasks: {content}"
      
 
 @mcp.tool(description=DeleteTasksDescription.model_dump_json())
@@ -268,6 +286,7 @@ async def main():
     )
 
 if __name__ == "__main__":
+    print("hello mcp")
     import asyncio
 
     asyncio.run(main())
