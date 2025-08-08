@@ -7,11 +7,11 @@ import markdownify
 from typing import Annotated
 from bson import ObjectId
 
-TOKEN = "1e4a0392b5cc"
-MY_NUMBER = "919834065747"
+TOKEN = ""
+MY_NUMBER = ""
 
 try:
-    client = MongoClient('mongodb+srv://ytmanager:pranav910@yt-cluster.zr2pc.mongodb.net/?retryWrites=true&w=majority&appName=yt-cluster')
+    client = MongoClient('connection uri')
     db = client['tasksDB']
     collection = db['tasks']
 except Exception as e:
@@ -142,7 +142,7 @@ def list_tasks():
 
     content = markdownify.markdownify(json_list_to_markdown_table(tasks))
     print(f"Tasks: {tasks}")
-    return f"""List of all the tasks: {content}"""
+    return f"""List of all the tasks: {tasks}"""
 
 @mcp.tool(description=CreateTasksDescription.model_dump_json())
 def create_task(task: dict):
