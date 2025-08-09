@@ -10,12 +10,12 @@ import glob
 import os
 import re
 
-TOKEN = ""
-MY_NUMBER = ""
+TOKEN = "1e4a0392b5cc"
+MY_NUMBER = "919834065747"
 
 # MongoDB setup
 try:
-    client = MongoClient('')
+    client = MongoClient('mongodb+srv://ytmanager:pranav910@yt-cluster.zr2pc.mongodb.net/?retryWrites=true&w=majority&appName=yt-cluster')
     db = client['tasksDB']
     collection = db['tasks']
 except Exception as e:
@@ -94,7 +94,7 @@ UpdateTaskDescription = RichToolDescription(
 )
 
 SummarizeYoutubeVideo = RichToolDescription(
-    description="Summarize YouTube video using the link provided by the user.",
+    description="Summarize YouTube video using the link provided by the user. You have to summarize the video transcript in detail.",
     use_when="When you need to see all tasks, or before deleting/updating a task to find the task ID."
 )
 
@@ -184,22 +184,58 @@ def download_vtt_subtitles(url):
     return vtt_files[0]
 
 # helper function
+# def extract_transcript_from_vtt(vtt_file):
+#     print("🧼 Cleaning .vtt transcript...")
+
+#     with open(vtt_file, 'r', encoding='utf-8') as f:
+#         lines = f.readlines()
+
+#     full_text = " ".join(line.strip() for line in lines if line.strip())
+
+#     full_text = re.sub(r'WEBVTT.*?\n', '', full_text, flags=re.DOTALL)
+#     full_text = re.sub(r'\d{2}:\d{2}:\d{2}\.\d{3} --> .*?\n', '', full_text)
+
+#     full_text = re.sub(r'<\d{2}:\d{2}:\d{2}\.\d{3}>', '', full_text)
+#     full_text = re.sub(r'</?c>', '', full_text)
+
+#     full_text = re.sub(r'\s{2,}', ' ', full_text)
+#     full_text = full_text.replace('\n', ' ').strip()
+
+#     return full_text
+
 def extract_transcript_from_vtt(vtt_file):
     print("🧼 Cleaning .vtt transcript...")
 
     with open(vtt_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
-    full_text = " ".join(line.strip() for line in lines if line.strip())
+    text_lines = []
+    skip_line = False
+    last_line = None
 
-    full_text = re.sub(r'WEBVTT.*?\n', '', full_text, flags=re.DOTALL)
-    full_text = re.sub(r'\d{2}:\d{2}:\d{2}\.\d{3} --> .*?\n', '', full_text)
+    for line in lines:
+        line = line.strip()
 
-    full_text = re.sub(r'<\d{2}:\d{2}:\d{2}\.\d{3}>', '', full_text)
-    full_text = re.sub(r'</?c>', '', full_text)
+        # Skip empty lines and metadata
+        if not line or line.startswith("WEBVTT") or re.match(r'\d{2}:\d{2}:\d{2}\.\d{3} -->', line):
+            skip_line = True
+            continue
 
-    full_text = re.sub(r'\s{2,}', ' ', full_text)
-    full_text = full_text.replace('\n', ' ').strip()
+        # Skip formatting tags (e.g., align:start position:0%)
+        if re.match(r'align:', line) or re.match(r'position:', line):
+            continue
+
+        # Remove inline formatting tags
+        cleaned_line = re.sub(r'<.*?>', '', line)
+
+        # Avoid duplicate consecutive lines
+        if cleaned_line != last_line:
+            text_lines.append(cleaned_line)
+            last_line = cleaned_line
+
+    # Join all cleaned lines into a single string
+    full_text = " ".join(text_lines)
+    full_text = re.sub(r'\s{2,}', ' ', full_text).strip()
 
     return full_text
 
