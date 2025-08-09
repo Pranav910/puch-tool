@@ -63,7 +63,7 @@ For now Puch only supports summarization of videos that has captions enabled. Mo
 
 ## 🆘 Support
 
-- 📧 Email: support@example.com
+- 📧 Email: pranavsuryavanshi910@gmail.com
 
 
 ## ⭐ Acknowledgments
