@@ -51,8 +51,6 @@ An intelligent tool for processing and summarizing YouTube video transcripts.
 
 ## 📖 Usage
 
-### Task Manager
-
 ```
 /mcp use 3ZvZJs1WMZ
 ```
