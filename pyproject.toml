@@ -5,7 +5,12 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "faster-whisper>=1.2.0",
     "fastmcp>=2.10.5",
+    "google-genai>=1.29.0",
     "markdownify>=1.1.0",
+    "numpy==2.2",
+    "pillow>=11.3.0",
     "pymongo>=4.13.2",
+    "youtube-transcript-api>=1.2.2",
 ]

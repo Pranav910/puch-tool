@@ -1,0 +1,136 @@
+ Video games have spectacular graphics, capable of transporting you to incredibly detailed cities,
+ heart racing backgrounds, magical worlds and breathtaking environments.
+ While this may look like an old Western train station locomotive from Red Dead Redemption 2,
+ it's actually composed of 2.1 million Verses, a similarly 3.5 million triangles,
+ with 976 colors and vectors assigned to the various services, all with a virtual sun illuminating the scene below.
+ But perhaps the most impressive fact is that these vertices, textures and lights are entirely composed of 1s and 0s.
+ That's continuously being processed inside your computer's graphics card, or the video game console.
+ So how does your computer take billions of 1s and 0s, and turn it into realistic 3D graphics?
+ Well, let's jump right in.
+ The video game graphics rendering pipeline has three key steps, predicting, reservation, and flagship,
+ while additional steps are used in many modern video games.
+ These three core steps have been used for decades and thousands of video games for both computers and consoles,
+ and are still the backbone of the video game graphics algorithm for pretty much every game you play.
+ Let's begin with the first step, Paul Verdechany.
+ The basic idea in this step is to take all the objects geometries and measures in the 3D space,
+ and use the field of view of the camera to calculate where each object falls at 2D window, called a view screen,
+ which is a 2D image that's set to the display.
+ In this train station scene, there are 1,100 different miles, and cameras fields of view sessions off of the player's ease,
+ which is a number of objects that need to be rendered to 600.
+ Let's focus on a lot more with an example.
+ Although this engine is rounded surfaces in some rather complex shapes, it's actually assembled from 760,000 flat triangles,
+ using 382,000 vertices, and nine different materials are colored by the surfaces of the trials.
+ Essentially, the entire train is moved as one piece onto a view screen,
+ but actually each of the train's hundreds of thousands of vertices are moved one a time.
+ So let's focus on single vertex, the process of moving vertex, and by extension the triangles from a 3D world onto a 2D view screen,
+ is done using three transformations.
+ First, moving vertex from model space to world-face, then from world-face to camera space,
+ and finally from the perspective of the view onto the view screen.
+ To perform this transformation, we use the X, Y and C coordinate of vertex in model space,
+ then the position scale and location of the model in world space,
+ and finally, the coordinates on location of the camera and the view view,
+ we plug all these numbers into different transformation matrices,
+ and multiply them together resulting in the X and Y values of vertex on the view screen,
+ as well as the Z value or depth, which we use later to determine object locking.
+ After three vertices of the train is transformed using single matrix math,
+ we get a single triangle moved onto the screen,
+ then the rest of the 382,000 vertices of the train, and the 2.1 million vertices of all the 600 objects in the camera's field of view,
+ undergo a similar set of transformations,
+ thereby moving all 3.5 million triangles onto a 2D view screen.
+ This is an incredible amount of matrix math,
+ but GPUs and graphics cards and video game consoles are designed to be triangle mesh rendering monsters,
+ and thus evolved over today's angle millions of triangles every few milliseconds.
+ For example, this GPU has 10,000ish cores designed to efficiently execute up to 35 trillion operations,
+ of 32-bit multiplication and addition every second,
+ and by distributing the vertex coordinates and transformation data on each of the cores,
+ the GPU can easily render the scene resulting in 120 or more frames to send.
+ Now that we have all the vertices moved onto the plane,
+ the next step is to use the three vertices of a single triangle,
+ and figure out which specific pixels under display are covered by that triangle.
+ This process is called restrosation,
+ a 4K monitor or TV has a resolution of 3840 by 2160,
+ yielding around 8.3 million pixels,
+ using the X and Y coordinates of vertices of a given triangle on the screen,
+ your GPU calculates where it falls within this massive grid,
+ and which of the pixels are covered by that particular triangle.
+ Next, those pixels are shaded using the texture or color assigned to that triangle.
+ Thus, with the restrosation, we turn triangles into fragments,
+ which are groups of pixels that come from the same triangle and share the same texture or color.
+ Then, we move onto the next triangle and shade the pixels they're covered by,
+ and continue to do this for each of the 3.5 million triangles
+ that were previously moved onto the screen.
+ By applying a red blue and green color values of each triangle,
+ so you probably epistles the 4K image is formed in frame over and center the display.
+ You probably wonder now you can't put triangles over that or black other triangles.
+ For example, the train's bottom view of much of the train station.
+ Additionally, the train has under the thousands triangles on its backside.
+ There's simply the rendering pipeline, but obviously don't be on the final image.
+ Determining which triangles are in front is called the visibility problem, and solved by using a Z-buffer or depth buffer.
+ A Z-buffer adds an extra value to each of the 8.3 million pixels corresponding to the distance or depth that each pixel is from camera in the previous step.
+ When we did the vertex transformations, we ended up with x and y coordinates.
+ But then, also got a Z-value, it corresponds to the distance from the transform vertex to the camera.
+ When triangles are summarized, it covers a set of pixels, and the Z-value or depth of the triangle is compared to the values stored in the Z-buffer.
+ If the triangle's depth values are lowered in the Z-buffer, meaning the triangle is closer to the camera,
+ then we paint in those pixels using the triangle's color, and replace the Z-buffers values using the triangle's Z values.
+ However, let's say a second triangle comes along with the Z values that are higher than those in the Z-buffer, meaning the triangle is further away.
+ We just throw out and keep the pixels from the triangle that was previously painted with lower Z values.
+ Using this method, only the closest triangles in the camera with lowest Z values will be displayed on the screen.
+ By the way, here's the image of the Z or depth buffer, wearing black is close, and white is far.
+ Note that because these triangles are in 3D space, the vertices often have three different Z values,
+ and thus each individual pixel with a triangle needs a Z value computed using vertex coordinates.
+ This allows intersecting triangles to properly render out their intersections, pixel by pixel.
+ Why should the rest of the X-buffers pixels?
+ Is that the triangle cuts an angle and passes through the center of the pixel?
+ When the entire pixel is painted with that triangle's color, resulting in giant and pixelated edges, they reduce the appearance of these gigantic edges.
+ Graphics processors implement the technique, called to sort of sampling anti-Alysing, with SSAA 16 sampling points, are distributed across a single pixel,
+ and when a triangle cuts a new pixel, depending on how many of the 16 sampling points the triangle covers.
+ A corresponding fractional shade of that color is applied to the pixel, resulting in fatages in the image, and significantly less noticeable pixelization.
+ One thing to remember is when you're playing a video game, your character's camera view, as well as the objects in the scene, are continuously moving around.
+ As a result, the process and calculations with inverted shading, authorization, and fragment shading are recalulated every single frame, once every 8.3 milliseconds, for a day-run at 120 frames a second.
+ Let's move onto the next step, which is fragment shading.
+ Now that we have a set of pixels, ours onto each triangle, is not enough to simply paint by number to color the pixels.
+ Rather, to make the scene realistic, we have to account for the direction and strength of the light or the nation.
+ The position of the camera, reflections, and shadows cast by other objects.
+ Fragment shading is therefore used to shade in each pixel with accurate illumination to make the scene realistic.
+ As a reminder, fragments are groups of pixels, one from a single, restaurant triangle.
+ Let's see a fragment shader action. This triangle is mostly made of black metal, and if we apply the same color to each of the pixel fragments, we get a horribly inaccurate training.
+ Such as making the background darker in the top light, and by adding in specular highlights or shininess, with the light bounces off the surface. We get a realistic black metal train, additionally. As the sun moves in the sky, the shading on the train reflects the passive time throughout the day.
+ And if it's night, the materials and colors of all objects are darker, illuminated from the light of the fire.
+ Even video games such as Super Mario 64, which is almost 30 years old, had some simple shading where the colors of surfaces are changed by light and shadows in scene.
+ So let's see how fragment shading works. The basic idea is that the surface is pointing directly to a light source such as a sun, it shaded brighter.
+ Whereas if a surface is facing perpendicular to or away from the light, it shaded darker.
+ In order to calculate the triangle shading, there are two key details we need to know. First, the direction of the light, and second, the direction of the triangle surface is facing.
+ For example, painted bright red instead of black. As you already know, this train is made of 762,000 flat triangles, many of which face in different directions. The direction of the individual triangle is facing is called its surface normal, which is simply the direction perpendicular to the plane of the triangle.
+ I'd like a flag all sitting out of the round. To calculate the triangle shading, we take the cosine of the angle or a theta between the two directions. The cosine theta value is one on the surface is facing the light, and when the surface is perpendicular to light, it's zero.
+ Next, we multiply cosine theta by the intensity of the light, and then by the color of the material to get the powerly shaded color of the triangle.
+ This process adjust the triangle's RGB values, and as a result, we get a range of lightness to darkness of a surface depending on how its individual triangles are facing the light.
+ However, if the surface is perpendicular or facing away, we don't want to cosine theta value of zero or negative number because this will result in a pitch black surface. Therefore, we set the minimum to zero, and add in an ambient light intensity times the surface color, and adjusts the ambient light.
+ So it's higher in daytime scenes and closer to zero at night. Finally, when there are multiple light sources in the scene, we perform this calculation multiple times with different light directions and intensies, and then add the individual contributions together.
+ Having more than a few light sources is computationally intense for your GPU, and thus it seems limit the number of individual light sources and sometimes limit the range of influence for lights. So the triangles will ignore distance lights.
+ It's better and matrix math used in rendering video gain graphics is rarely complicated, but luckily there's a free and easy way to learn it, and that's what brilliant doubory. Brilliant is a multi-disciplinary online interactive education platform, and it's the best way to learn math, computer science, and many other fields of science and engineering.
+ That's why we've been still finding that find video gain graphics considerably. For example, vectors are used to find a value cosine theta between the direction of the light and surface norm, and GPU uses a dot product divided by norm of the two vectors to calculate it. Additionally, we set the light detail like into 3D shapes and transformations from one coordinate system to another easy matrices.
+ Brilliant drawing, brilliant douboring has a higher course than vector calculus, bring geometry, and 3D geometry. As well as courses on linear algebra and matrix math, all of which have direct applications to the scale, and are needed for your fully understanding graphics algorithms. Alternatively, if you're all set with math, we recommend their course on thinking and code, which will help you build a sound foundation on computational problem solving.
+ Brilliant drawing a free 3D drawing with full access to their thousands of lessons. It's incredibly easy to sign up, try out some of their lessons for free, and if you like them, which we're sure you will, you can sign up for an annual subscription.
+ To the viewers of this channel, Brilliant drawing 20% off an annual subscription to the first 200 people who sign up. Just go to BrilliantBath or in slash branch education. The link is in the description below. Let's get back to the drawing machine.
+ One key problem with it, is the triangles with an object each have only a single normal, and thus each triangle share the same color throughout the triangle surface. This is called fletching, and is rather unrealistic when viewed under surfaces such as body of the steamer.
+ So in order to produce a smooth chain, instead using surface normals, we use one normal for each vertex calculated using the average of normals of adjacent triangles.
+ Next, we use a method called very central coordinates to produce a smooth gradient of normals across the surface of the triangle. Visual is like mixing three different colors across triangle, but instead we're using the three vertex normal directions.
+ We take the center of each pixel, and use a vertex normals and coordinates of the pre-rasterized triangle to calculate the very central normal that particular pixel. Just like mixing the three colors across the triangle. This pixels normal will be proportional next to the three vertex normals of the triangle.
+ As a result, when a set of triangles is used to form a curved surface, each pixel will be part of a gradient of normals resulting in gradient of angles facing light with pixel by pixel coloring and smooth chain across the surface.
+ We want to say that this has been one of the most enjoyable videos to make, simply because we love playing video games, and seeing the algorithm that makes these incredible graphics has been a joy.
+ We spent over 540 hours researching writing, modeling the scene from RDR2, and aiming if you could take a few seconds to hit that like button, subscribe, share this video with a friend, and write a comment below, and we'll help us more than you think. So, thank you.
+ Thus far, we covered course apps of a graphics rendering pipeline. However, there are many more steps and advanced types. For example, you might be wondering where ray tracing and DLSS or deep learnings through a sampling fits into this pipeline.
+ Ray tracing is predominantly used to create highly detailed scenes with accurate writing and reflections typically found in TV movies and a single frame can take dozens of minutes or more to render.
+ The primary visibility and shading of the objects are calculated using the graphics rendering pipeline to discuss, but in certain field games, ray tracing is used to calculate shadows reflections and improved lighting. On the other hand, DLSS is an algorithm for taking a low resolution frame, head up scaling into a 4K frame, using a convolution rule network.
+ Therefore, DLSS is executed after ray tracing in the graphics pipeline generates a low resolution frame.
+ One interesting note is that the latest generation GPUs has three entirely separate architectures of computational resources, of course.
+ Cuda or Shane Cores, execute the graphics rendering pipeline, ray tracing cores are self-assignatory, and then DLSS is run on the tenser cores.
+ Therefore, when you're playing a high-end video game with ray tracing in DLSS, your GPU utilizes all of this computational resources at the same time, allowing you to play 4K games and render frames in less than 10 to less seconds each.
+ Whereas, if you were to solely rely on a Cuda or Shane Cores, then a single frame will take around 50 milliseconds.
+ With that mind, ray tracing and DLSS are entirely different topics, where they're only equally complicated algorithms, and therefore, we're planning separate videos that will explore each of these topics in detail.
+ Furthermore, when it comes to video game graphics, there are advanced topics such as shows, reflections, UVs, normal maps, and more, therefore, we're considering making an additional video on these advanced topics.
+ If you're interested in set of video, please note in the comments.
+ We believe the future will require a strong emphasis on engineering education and we're thankful to all our Patreon and YouTube memberships answers for supporting this stream.
+ If you want to support us on YouTube memberships or Patreon, you can find links in the description.
+ This is Branch Education, and we create really animations that dive deeply into the technology that drives our modern worlds.
+ Watch another branch video by clicking one of these cards or click here to subscribe. Thanks for watching to the end.
