@@ -11,12 +11,12 @@ import glob
 import re
 import os
 
-TOKEN = "1e4a0392b5cc"
-MY_NUMBER = "919834065747"
+TOKEN = ""
+MY_NUMBER = ""
 
 # MongoDB setup
 try:
-    client = MongoClient('mongodb+srv://ytmanager:pranav910@yt-cluster.zr2pc.mongodb.net/?retryWrites=true&w=majority&appName=yt-cluster')
+    client = MongoClient('')
     db = client['tasksDB']
     collection = db['tasks']
 except Exception as e:
