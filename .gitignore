@@ -10,3 +10,7 @@ wheels/
 .venv
 main.py
 transcript.py
+exp.py
+exp1.py
+gemini-native
+ig.py
